@@ -8,7 +8,7 @@ db = DB()
 
 st.sidebar.title('Flights Analytics')
 
-user_option = st.sidebar.selectbox('Menu',['OverView','Check Flights','Analytics'])
+user_option = st.sidebar.selectbox('Menu',['OverView','Check Flights','Check Average Price','Analytics'])
 
 if user_option == 'Check Flights':
     st.title('Check Flights')
@@ -35,6 +35,14 @@ if user_option == 'Check Flights':
             st.write("No flights found for the selected Source and Destination.")
 
         #st.dataframe(results)
+
+elif user_option == "Check Average Price":
+    st.title("Average Price For Airline Vs Destination")
+    result = db.avg_price_per_airlines()
+
+    # columns = ["Source","Destination","Airline","Avg_Price","Rank"]
+    # df = pd.DataFrame(result,columns=columns)
+    st.dataframe(result)
 
 elif user_option == 'Analytics':
     airline, frequency = db.fetch_airline_frequency()

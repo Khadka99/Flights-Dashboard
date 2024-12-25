@@ -1,5 +1,6 @@
 import mysql.connector
 import os
+import pandas as pd
 
 
 class DB:
@@ -124,11 +125,24 @@ class DB:
 
         return date, frequency
 
-    def dep_time_and_price(self):
+    def avg_price_per_airlines(self):
         if not self.mycursor:
             raise ConnectionError("Database connection is not established.")
 
+        self.mycursor.execute("""
+        SELECT Source,Destination,Airline,CAST(AVG(Price) AS FLOAT),
+                DENSE_RANK() OVER(PARTITION BY Source,Destination ORDER BY AVG(Price)) AS 'Rank'
+                FROM flight
+                GROUP BY Source,Destination,Airline
+        """)
 
+        data = self.mycursor.fetchall()
+
+        columns = ['Source', 'Destination', 'Airline', 'Avg_Price', 'Rank']
+        df = pd.DataFrame(data, columns=columns)
+        return df
+
+    def dep_time_and_price(self):
         if not self.mycursor:
             raise ConnectionError("Database connection is not established.")
 
